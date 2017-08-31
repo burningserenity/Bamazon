@@ -26,7 +26,7 @@ function buyProduct(answers) {
             connection.query("SELECT price FROM products WHERE product_name = ?", answers.productSel, function(err, res){
                 if (err) throw err;
                 price = res[0].price;
-                var change = connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: remaining}, {product_name: product}], function(err, res){
+                var change = connection.query("UPDATE products SET stock_quantity = ?, product_sales = product_sales + ? WHERE product_name = ?", [remaining, answers.quantitySel, product], function(err, res){
                     if (err) throw err;
                     priceTotal = price * answers.quantitySel;
                     console.log("You purchased " + answers.quantitySel + " " + answers.productSel + " at $" + price + " for a total of $" + priceTotal + ".");
