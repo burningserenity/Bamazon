@@ -40,7 +40,7 @@ function buyProduct(answers) {
 connection.connect(function(err) {
     if (err) throw err;
     console.log("Connected as ID: " + connection.threadId);
-    connection.query("SELECT item_id, product_name, price, department_name, product_description FROM products", function(err, res) {
+    connection.query("SELECT item_id, product_name, price, department_name FROM products", function(err, res) {
         if (err) throw err;
         console.table(res);
         var productNames = [];
