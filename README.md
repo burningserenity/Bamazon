@@ -14,3 +14,6 @@ and must be added to a department that exists in the departments table.
 
 The final module, bamazonSupervisor.js, allows the user to either display each department with over head costs, total sales, and total profit (over head deducted from sales), or add a new 
 department to the departments table; each department must have a unique name. 
+
+
+Link to video demonstration: https://my.pcloud.com/publink/show?code=XZyLuy7Z0YngvUf433Y0VB5mecM3QJ5AdKlk

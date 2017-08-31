@@ -41,6 +41,7 @@ function showInventory() {
 function lowInventory() {
 	connection.query("SELECT * FROM products WHERE stock_quantity < 100", function(err, res) {
 		if (err) throw err;
+        console.table(res);
         connection.end();
 	});
 }
