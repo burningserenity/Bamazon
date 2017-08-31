@@ -44,5 +44,25 @@ function viewSales() {
             }]);
             console.log("---------------------------------------------------------------------------------------------\n");
         }
+        connection.end();
+    });
+}
+
+function createDepartment() {
+    inquirer.prompt([{
+        type: 'input',
+        name: 'nameSel',
+        message: 'Name the new department: '
+    },
+    {
+        type: 'input',
+        name: 'overheadSel',
+        message: 'How much are overhead costs for this department?'
+    }]).then(function(answers){
+        connection.query("INSERT INTO departments(department_name, over_head_costs) VALUES(?, ?)", [answers.nameSel, answers.overheadSel], function(err, res) {
+            if (err) throw err;
+            console.log("Added department: " + answers.nameSel + " with an over head cost of $" + answers.overheadSel);
+            connection.end();
+        });
     });
 }

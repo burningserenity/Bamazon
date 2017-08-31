@@ -42,7 +42,6 @@ function showInventory() {
 function lowInventory() {
 	connection.query("SELECT * FROM products WHERE stock_quantity < 100", function(err, res) {
 		if (err) throw err;
-		console.table(res);
         connection.end();
 	});
 }
@@ -64,6 +63,10 @@ function addTo() {
 			type: 'input',
 			name: 'quantitySel',
 			message: 'How much?',
+            validate: function(value) {
+                if (isNaN(value)) return false;
+                else return true;
+            }
 			}]).then(function(answers) {
 				connection.query("SELECT stock_quantity FROM products WHERE product_name = ?", answers.productSel, function(err, res) {
 				if (err) throw err;
@@ -71,7 +74,7 @@ function addTo() {
 				var newAmount = amount + parseInt(answers.quantitySel);
 				connection.query("UPDATE products SET stock_quantity = ? WHERE product_name = ?", [newAmount, answers.productSel], function(err, res) {
 					if (err) throw err;
-					console.log("Added " + answers.quantitySel + " units of " + answers.productSel + ", the new total is: " + newAmount + ".");
+					console.log("Added " + parseFloat(answers.quantitySel).toFixed(0) + " units of " + answers.productSel + ", the new total is: " + newAmount + ".");
                     connection.end();
 				});
 			});
@@ -80,6 +83,7 @@ function addTo() {
 }
 
 function newItem() {
+    var departmentExists = false;
 	inquirer.prompt([{
 		type: 'input',
 		name: 'newProduct',
@@ -88,22 +92,51 @@ function newItem() {
 	{
 		type: 'input',
 		name: 'newQuantity',
-		message: 'How many do you want to stock?'
+		message: 'How many do you want to stock?',
+        validate: function(value) {
+            if (isNaN(value)) return false;
+            else return true;
+        }
 	},
 	{
 		type: 'input',
 		name: 'newPrice',
-		message: 'What do you want to charge?'
+		message: 'What do you want to charge?',
+        validate: function(value) {
+            if (isNaN(value)) return false;
+            else return true;
+        }
 	},
 	{
 		type: 'input',
 		name: 'newDepartment',
 		message: 'Stock in which department?'
 	}]).then(function(answers) {
-		connection.query("INSERT INTO products(product_name, stock_quantity, price, department_name) VALUES(?, ?, ?, ?)", [answers.newProduct, answers.newQuantity, answers.newPrice, answers.newDepartment], function(err, res) {
-	if (err) throw err;
-	console.log("Added " + answers.newProduct + " to " + answers.newDepartment + ". Can sell " + answers.newQuantity + " for $" + answers.newPrice + " each.");
-            connection.end();
-		});
-	});
+        connection.query("SELECT department_name FROM departments", function(err, res) {
+            if (err) throw err;
+            for (i = 0; i < res.length; i++) {
+                if (res[i].department_name  == answers.newDepartment) departmentExists = true;
+                else if (i == res.length) departmentExists = false;
+            }
+            if (departmentExists == false) {
+                console.log("No such department");
+                connection.end();
+                return 1;
+            }
+            connection.query("SELECT product_name FROM products", function(err, res){
+                for (i = 0; i < res.length; i++) {
+                    if (res[i].product_name == answers.newProduct) {
+                        console.log("Item already exists");
+                        connection.end();
+                        return 2;
+                    }
+                }
+		        connection.query("INSERT INTO products(product_name, stock_quantity, price, department_name, product_sales) VALUES(?, ?, ?, ?, 0.00)", [answers.newProduct, answers.newQuantity, answers.newPrice, answers.newDepartment], function(err, res) {
+	        if (err) throw err;
+	        console.log("Added " + answers.newProduct + " to " + answers.newDepartment + ". Can sell " + parseFloat(answers.newQuantity).toFixed(0) + " for $" + answers.newPrice + " each.");
+                    connection.end();
+		        });
+	        });
+        });
+    });
 }
