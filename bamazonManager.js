@@ -24,7 +24,6 @@ connection.connect(function(err) {
 });
 
 function doStuff(answers) {
-	console.log(answers);
 	if (answers.actionSel == 'View Inventory') showInventory();
 	else if (answers.actionSel == 'View Low Inventory') lowInventory();
 	else if (answers.actionSel == 'Add To Inventory') addTo();

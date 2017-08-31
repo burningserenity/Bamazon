@@ -59,10 +59,19 @@ function createDepartment() {
         name: 'overheadSel',
         message: 'How much are overhead costs for this department?'
     }]).then(function(answers){
-        connection.query("INSERT INTO departments(department_name, over_head_costs) VALUES(?, ?)", [answers.nameSel, answers.overheadSel], function(err, res) {
-            if (err) throw err;
-            console.log("Added department: " + answers.nameSel + " with an over head cost of $" + answers.overheadSel);
-            connection.end();
+        connection.query("SELECT department_name FROM departments", function(err, res) {
+            for (i = 0; i < res.length; i++) {
+                if (res[i].department_name == answers.nameSel) {
+                    console.log("Department already exists");
+                    connection.end();
+                    return 1;
+                }
+            }
+            connection.query("INSERT INTO departments(department_name, over_head_costs) VALUES(?, ?)", [answers.nameSel, answers.overheadSel], function(err, res) {
+                if (err) throw err;
+                console.log("Added department: " + answers.nameSel + " with an over head cost of $" + answers.overheadSel);
+                connection.end();
+            });
         });
     });
 }
